@@ -1,0 +1,14 @@
+{
+  "name": "nost4lgia",
+  "version": "2.2.0",
+  "description": "A retro cable-TV guide + player for LG webOS TVs, streaming Internet Archive video. Remote-first, vaporwave, open source.",
+  "license": "MIT",
+  "author": "Nicola Riker Urdaneta",
+  "homepage": "https://github.com/nicolascribbles/nost4lgia",
+  "repository": { "type": "git", "url": "https://github.com/nicolascribbles/nost4lgia.git" },
+  "scripts": {
+    "data": "node spelunkr-src/build_channels.js",
+    "package": "python build_ipk.py"
+  },
+  "keywords": ["webos", "lg-tv", "tv-guide", "internet-archive", "retro", "vaporwave"]
+}

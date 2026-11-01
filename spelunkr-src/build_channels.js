@@ -1,0 +1,61 @@
+// Build a local, self-contained channel database from Spelunkr's public data.
+// Fetched here (no CORS limits); the TV app then reads the local JSON and streams
+// the same archive.org videos directly. Run: node spelunkr-src/build_channels.js
+const fs = require("fs");
+
+const BASE = "https://data.spelunkr.tv/";
+const OUT = "C:/Users/nicol/living-room/launcher/spelunkr-channels.js";
+const MAX_ITEMS = 80; // plenty for a continuously-playing channel; keeps size sane
+
+(async () => {
+  const lineup = await (await fetch(BASE + "lineup.json")).json();
+  const channels = [];
+
+  for (const c of lineup.channels) {
+    const vers = c.versions && c.versions.length ? c.versions[c.versions.length - 1] : null;
+    const manPath = vers && vers.manifest
+      ? vers.manifest
+      : "manifests/" + c.id + "/v" + (c.version || 1) + ".json";
+
+    let man;
+    try {
+      const res = await fetch(BASE + manPath);
+      if (!res.ok) throw new Error("HTTP " + res.status);
+      man = await res.json();
+    } catch (e) {
+      console.log("skip", c.id, "-", e.message);
+      continue;
+    }
+
+    const items = (man.items || [])
+      .filter((it) => it && it.id && (it.mp4 || it.file))
+      .slice(0, MAX_ITEMS)
+      .map((it) => ({
+        t: it.title || it.id,
+        y: it.year || "",
+        d: it.duration || 0,
+        u: "https://archive.org/download/" + it.id + "/" + encodeURIComponent(it.mp4 || it.file),
+      }));
+
+    if (!items.length) { console.log("empty", c.id); continue; }
+
+    channels.push({
+      n: c.dial,
+      id: c.id,
+      name: c.name,
+      emoji: c.emoji || "",
+      color: c.color || "#8a8a8a",
+      desc: c.description || "",
+      start: (vers && vers.startIndex) || 0,
+      items: items,
+    });
+    console.log("ch", String(c.dial).padStart(3), c.name, "-", items.length, "items");
+  }
+
+  channels.sort((a, b) => (a.n || 0) - (b.n || 0));
+  // Written as a JS global so the TV app can load it via <script> (packaged
+  // webOS apps can't fetch() local files).
+  fs.writeFileSync(OUT, "window.SPELUNKR_CHANNELS=" + JSON.stringify({ channels: channels }) + ";");
+  const kb = (fs.statSync(OUT).size / 1024).toFixed(0);
+  console.log("\nWROTE", OUT, kb + "KB,", channels.length, "channels");
+})().catch((e) => console.log("FATAL:", e.message));

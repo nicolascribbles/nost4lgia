@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Nost4lgia">
+  <defs>
+    <linearGradient id="vw" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ff6ec7"/>
+      <stop offset="0.5" stop-color="#b36bff"/>
+      <stop offset="1" stop-color="#4df5ff"/>
+    </linearGradient>
+  </defs>
+  <rect x="3" y="3" width="58" height="58" rx="15" fill="url(#vw)"/>
+  <rect x="3" y="3" width="58" height="27" rx="15" fill="#ffffff" opacity="0.14"/>
+  <g fill="#1a0b3a">
+    <rect x="18" y="16" width="7" height="32"/>
+    <rect x="39" y="16" width="7" height="32"/>
+    <polygon points="25,16 31,16 46,48 40,48"/>
+  </g>
+</svg>

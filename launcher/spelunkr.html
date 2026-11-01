@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nost4lgia</title>
+<style>
+  * { box-sizing: border-box; }
+  :root {
+    --ink: #f7ebff; --muted: #c9a9ff;
+    --magenta: #ff6ec7; --cyan: #4df5ff; --mint: #51ffd6; --violet: #b36bff; --yellow: #fff07a;
+    --chw: 240px;
+  }
+  html, body { margin: 0; width: 100%; height: 100%; background: #160a33; color: var(--ink);
+    font-family: "Courier New", "Lucida Console", monospace; overflow: hidden; user-select: none; }
+
+  /* ================= GUIDE ================= */
+  #guide { position: fixed; top: 0; left: 0; right: 0; bottom: 0; display: none; flex-direction: column;
+    background: linear-gradient(180deg, #3b1578 0%, #2a0f5c 45%, #160a33 100%); }
+  #guide.on { display: flex; }
+
+  #gTop { height: 31%; display: flex; border-bottom: 4px solid var(--cyan); min-height: 0; box-shadow: 0 4px 0 0 var(--magenta); }
+  #gPrev { width: 36%; border-right: 4px solid var(--cyan); position: relative; overflow: hidden; background: #160a33; }
+  #gPrevIdent { position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; align-items: center; justify-content: center; }
+  #gPrevEmoji { font-size: 90px; }
+  #preview { position: absolute; top: 0; left: 0; right: 0; bottom: 0; width: 100%; height: 100%; object-fit: cover; background: transparent; opacity: 0; transition: opacity .3s ease; }
+  #gPrevBadge { position: absolute; left: 0; right: 0; bottom: 0; padding: 10px 16px; background: linear-gradient(to top, rgba(10,0,25,.9), rgba(10,0,25,0)); display: flex; align-items: baseline; }
+  #gPrevNum { font-size: 34px; font-weight: 800; color: var(--cyan); }
+  #gPrevName { font-size: 20px; font-weight: 700; color: var(--yellow); margin-left: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  #gInfo { flex: 1; padding: 16px 28px; min-width: 0; display: flex; flex-direction: column; background: linear-gradient(135deg, #c84be6 0%, #7b2ff7 55%, #531e9e 100%); }
+  #gInfoHead { display: flex; justify-content: space-between; align-items: baseline; }
+  #gWord { font-size: 33px; font-weight: 800; letter-spacing: 3px; color: #fff; text-shadow: 2px 2px 0 var(--magenta), 4px 4px 0 var(--cyan); }
+  #gWord .d { color: var(--cyan); }
+  #gClock { font-size: 22px; color: #fff; font-weight: 700; text-shadow: 1px 1px 0 var(--magenta); }
+  #gTitle { font-size: 25px; font-weight: 800; margin-top: 10px; color: var(--yellow); text-shadow: 2px 2px 0 rgba(0,0,0,.35); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  #gAir { font-size: 18px; font-weight: 800; margin-top: 6px; color: var(--cyan); }
+  #gDesc { font-size: 16px; line-height: 1.3; color: #f3e6ff; margin-top: 6px; overflow: hidden; }
+
+  #gHeadRow { display: flex; background: #120733; height: 40px; border-bottom: 2px solid var(--violet); }
+  #gHeadRow .spacer { width: var(--chw); flex: none; padding: 9px 14px; color: var(--magenta); font-weight: 800; font-size: 18px; border-right: 2px solid #3a1a6e; }
+  #gHeadTimes { position: relative; flex: 1; }
+  #gHeadTimes .tl { position: absolute; top: 0; bottom: 0; padding: 9px 0 0 8px; font-size: 17px; font-weight: 800; color: var(--cyan); border-left: 2px solid #3a1a6e; }
+
+  #gBody { flex: 1; overflow: hidden; position: relative; }
+  #gRows { position: absolute; left: 0; right: 0; top: 0; }
+  .row { display: flex; height: 74px; border-bottom: 2px solid #2a1456; }
+  .chcell { width: var(--chw); flex: none; background: linear-gradient(135deg, #3a1a6e, #241048); border-left: 9px solid var(--c, #666); padding: 8px 12px; display: flex; flex-direction: column; justify-content: center; }
+  .chcell .n { font-size: 29px; font-weight: 800; line-height: 1; color: #fff; text-shadow: 1px 1px 0 var(--magenta); }
+  .chcell .nm { font-size: 15px; color: var(--muted); margin-top: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .rowtime { position: relative; flex: 1; overflow: hidden;
+    background-image: repeating-linear-gradient(90deg, #3a1a6e 0, #3a1a6e 2px, transparent 2px, transparent 25%); }
+  .prog { position: absolute; top: 4px; bottom: 4px; overflow: hidden; border-radius: 6px;
+    background: linear-gradient(180deg, #2e1560, #241048); border: 1px solid #140833; padding: 0 12px;
+    display: flex; align-items: center; font-size: 18px; font-weight: 700; color: #ece0ff; white-space: nowrap; text-overflow: ellipsis; }
+  .prog.cellsel { background: linear-gradient(90deg, var(--magenta), var(--cyan)); color: #15103a; box-shadow: inset 0 0 0 3px #fff; z-index: 2; font-weight: 800; }
+
+  #gFoot { background: #120733; padding: 10px 24px; display: flex; justify-content: space-between; color: var(--muted); font-size: 15px; letter-spacing: .06em; text-transform: uppercase; border-top: 2px solid var(--magenta); }
+  #gCredit .by { color: var(--cyan); }
+
+  /* ================= PLAYER ================= */
+  #player { position: fixed; top: 0; left: 0; right: 0; bottom: 0; display: none; background: #000; }
+  #player.on { display: block; }
+  #video { position: absolute; top: 0; left: 0; right: 0; bottom: 0; width: 100%; height: 100%; background: #000; object-fit: contain; }
+  #spinner { position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%); color: var(--cyan); font-size: 24px; text-shadow: 0 0 10px var(--magenta); display: none; }
+  #spinner.on { display: block; }
+  #infobar { position: absolute; left: 0; right: 0; bottom: 0; padding: 26px 44px; background: linear-gradient(to top, rgba(22,10,51,.92), rgba(22,10,51,0)); display: flex; align-items: flex-end; transition: opacity .25s ease; }
+  #infobar > * + * { margin-left: 22px; }
+  #infobar.hide { opacity: 0; }
+  #ibNum { font-size: 56px; font-weight: 800; line-height: 1; border-left: 10px solid var(--c, var(--magenta)); padding-left: 20px; color: var(--cyan); text-shadow: 2px 2px 0 var(--magenta); }
+  #ibText { flex: 1; min-width: 0; }
+  #ibChan { font-size: 26px; font-weight: 800; color: #fff; }
+  #ibTitle { font-size: 22px; color: var(--yellow); margin-top: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  #ibHint { color: var(--muted); font-size: 15px; text-align: right; line-height: 1.5; }
+
+  #dial { position: absolute; top: 40px; right: 48px; z-index: 9; display: none; background: rgba(10,0,25,.9); border: 3px solid var(--cyan); border-radius: 12px; color: var(--cyan); padding: 12px 26px; font-size: 54px; font-weight: 800; letter-spacing: 4px; box-shadow: 0 0 18px var(--magenta); }
+  #dial.on { display: block; }
+  #toast { position: absolute; left: 50%; top: 56px; transform: translateX(-50%); z-index: 9; display: none; background: rgba(10,0,25,.92); border: 2px solid var(--magenta); border-radius: 10px; padding: 12px 24px; font-size: 22px; color: #fff; max-width: 70%; text-align: center; }
+  #toast.on { display: block; }
+
+  #modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; display: none; align-items: center; justify-content: center; background: rgba(8,2,20,.72); z-index: 20; }
+  #modal.on { display: flex; }
+  #modal .box { background: linear-gradient(135deg, #2a0f5c, #160a33); border: 3px solid var(--cyan); border-radius: 18px; box-shadow: 0 0 34px var(--magenta); padding: 36px 48px; max-width: 64%; text-align: center; }
+  #mText { font-size: 30px; font-weight: 800; color: #fff; line-height: 1.3; }
+  #mText .mch { display: block; font-size: 22px; color: var(--yellow); margin-top: 10px; }
+  #mBtns { display: flex; justify-content: center; margin-top: 30px; }
+  #mBtns .btn { font-size: 24px; font-weight: 800; padding: 14px 30px; margin: 0 12px; border-radius: 10px; color: #fff; background: #3a1a6e; border: 3px solid transparent; }
+  #mBtns .btn.sel { border-color: #fff; background: linear-gradient(90deg, var(--magenta), var(--cyan)); color: #15103a; }
+</style>
+</head>
+<body>
+  <div id="guide" class="on">
+    <div id="gTop">
+      <div id="gPrev">
+        <div id="gPrevIdent"><span id="gPrevEmoji"></span></div>
+        <video id="preview" muted playsinline autoplay preload="auto"></video>
+        <div id="gPrevBadge"><span id="gPrevNum"></span><span id="gPrevName"></span></div>
+      </div>
+      <div id="gInfo">
+        <div id="gInfoHead">
+          <div id="gWord">NOST<span class="d">4</span>LGIA</div>
+          <div id="gClock"></div>
+        </div>
+        <div id="gTitle"></div>
+        <div id="gAir"></div>
+        <div id="gDesc"></div>
+      </div>
+    </div>
+    <div id="gHeadRow">
+      <div class="spacer" id="hcDate"></div>
+      <div id="gHeadTimes"></div>
+    </div>
+    <div id="gBody"><div id="gRows"></div></div>
+    <div id="gFoot">
+      <span>&#9650;&#9660; Channel &middot; &#9664;&#9654; Time &middot; OK Watch / Remind &middot; 0-9 Jump</span>
+      <span id="gCredit"><span class="by">Made by Nicola Riker Urdaneta</span> &nbsp;&middot;&nbsp; Back exits to Home</span>
+    </div>
+  </div>
+
+  <div id="player">
+    <video id="video" preload="auto" playsinline></video>
+    <div id="spinner">Tuning in&hellip;</div>
+    <div id="infobar">
+      <div id="ibNum">--</div>
+      <div id="ibText"><div id="ibChan"></div><div id="ibTitle"></div></div>
+      <div id="ibHint">&#9650;&#9660; channel &nbsp; &#9664;&#9654; seek<br>OK guide &middot; 0-9 tune &middot; Back guide</div>
+    </div>
+  </div>
+
+  <div id="dial"></div>
+  <div id="toast"></div>
+  <div id="modal"><div class="box">
+    <div id="mText"></div>
+    <div id="mBtns"><div id="mYes" class="btn">Switch now</div><div id="mNo" class="btn">Stay here</div></div>
+  </div></div>
+
+<script src="spelunkr-channels.js"></script>
+<script>
+(function () {
+  "use strict";
+
+  var DATA = (window.SPELUNKR_CHANNELS && window.SPELUNKR_CHANNELS.channels) ? window.SPELUNKR_CHANNELS.channels : [];
+  var fb = 900;
+  for (var i = 0; i < DATA.length; i++) { if (DATA[i].n === undefined || DATA[i].n === null) DATA[i].n = fb++; }
+  DATA.sort(function (a, b) { return a.n - b.n; });
+
+  var KEY = { LEFT: 37, UP: 38, RIGHT: 39, DOWN: 40, OK: 13, BACK: 461, BACK2: 10009, ESC: 27 };
+  var MIN = 60000, SLOT_MS = 30 * MIN, WINDOW_MS = 120 * MIN; // 2-hour window, 30-min grid
+  var DEFAULT_DUR = 30 * MIN;
+
+  // Schedule anchor: aligned to the half hour, so program blocks line up with the grid.
+  var ANCHOR = (function () { var d = new Date(); d.setSeconds(0, 0); d.setMinutes(d.getMinutes() - (d.getMinutes() % 30)); return d.getTime(); })();
+
+  var el = function (id) { return document.getElementById(id); };
+  var guideEl = el("guide"), playerEl = el("player"), bodyEl = el("gBody"), rowsWrap = el("gRows");
+  var headTimes = el("gHeadTimes"), clockEl = el("gClock");
+  var preview = el("preview"), prevNum = el("gPrevNum"), prevName = el("gPrevName"), prevEmoji = el("gPrevEmoji");
+  var gTitle = el("gTitle"), gAir = el("gAir"), gDesc = el("gDesc");
+  var video = el("video"), infobar = el("infobar"), ibNum = el("ibNum"), ibChan = el("ibChan"), ibTitle = el("ibTitle");
+  var dialEl = el("dial"), toastEl = el("toast"), spinner = el("spinner");
+  var modalEl = el("modal"), mText = el("mText"), mYes = el("mYes"), mNo = el("mNo");
+
+  var mode = "guide";
+  var selRow = 0, selTime = Date.now(), viewStart = 0, cIndex = 0, iIndex = 0;
+  var rows = [];
+  var scrollY = 0, errStreak = 0;
+  var dialBuf = "", dialTimer = null, infoTimer = null, toastTimer = null, stallTimer = null, previewTimer = null;
+  var reminders = [];
+  var modalOpen = false, modalSel = 0, modalRem = null;
+
+  function esc(s) { return String(s === undefined || s === null ? "" : s).replace(/</g, "&lt;"); }
+  function wrap(ch, seq) { var L = ch.items.length; return ((seq % L) + L) % L; }
+  function yearOf(it) { var m = String(it && it.y ? it.y : "").match(/\d{4}/); return m ? parseInt(m[0], 10) : 0; }
+  function curIndex(ch) {
+    if (ch._start === undefined) {
+      var idx = -1;
+      for (var i = 0; i < ch.items.length; i++) { if (yearOf(ch.items[i]) >= 1992) { idx = i; break; } }
+      if (idx < 0) { var best = 0, by = -1; for (var j = 0; j < ch.items.length; j++) { var y = yearOf(ch.items[j]); if (y > by) { by = y; best = j; } } idx = best; }
+      ch._start = idx;
+    }
+    return ch._start;
+  }
+  function itemDurMs(ch, seq) { var it = ch.items[wrap(ch, seq)]; var d = it && it.d ? it.d * 1000 : 0; return d > 0 ? d : DEFAULT_DUR; }
+  function loopDurMs(ch) { if (ch._loop === undefined) { var s = 0; for (var i = 0; i < ch.items.length; i++) s += itemDurMs(ch, i); ch._loop = s; } return ch._loop; }
+
+  // Program airing at time t: its sequence index and exact start time.
+  function progAt(ch, t) {
+    if (!ch.items.length) return { seq: 0, start: t, end: t + DEFAULT_DUR, item: null };
+    var ld = loopDurMs(ch);
+    var elapsed = t - ANCHOR; if (elapsed < 0) elapsed = 0; elapsed = elapsed % ld;
+    var seq = curIndex(ch), acc = 0, guard = 0;
+    while (guard++ < ch.items.length + 2) {
+      var d = itemDurMs(ch, seq);
+      if (acc + d > elapsed) { var start = t - (elapsed - acc); return { seq: seq, start: start, end: start + d, item: ch.items[wrap(ch, seq)] }; }
+      acc += d; seq++;
+    }
+    return { seq: seq, start: t, end: t + DEFAULT_DUR, item: ch.items[wrap(ch, seq)] };
+  }
+  function programsInWindow(ch, startT, endT) {
+    var list = [], first = progAt(ch, startT), seq = first.seq, t = first.start, guard = 0;
+    while (t < endT && guard++ < 300) {
+      var d = itemDurMs(ch, seq);
+      list.push({ seq: seq, start: t, end: t + d, item: ch.items[wrap(ch, seq)] });
+      t += d; seq++;
+    }
+    return list;
+  }
+
+  function fmtTime(d) { var h = d.getHours(), m = d.getMinutes(), ap = h >= 12 ? "PM" : "AM"; h = h % 12; if (h === 0) h = 12; return h + ":" + (m < 10 ? "0" : "") + m + " " + ap; }
+  function floorHalf(t) { return t - ((t - ANCHOR) % SLOT_MS); }
+
+  function hasReminder(chIdx, seq) { for (var i = 0; i < reminders.length; i++) { if (reminders[i].chIdx === chIdx && reminders[i].seq === seq) return true; } return false; }
+
+  function renderHead() {
+    var d = new Date(), days = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
+    el("hcDate").textContent = days[d.getDay()] + " " + (d.getMonth() + 1) + "/" + d.getDate();
+    var h = "", slots = WINDOW_MS / SLOT_MS;
+    for (var k = 0; k < slots; k++) { h += '<div class="tl" style="left:' + (k / slots * 100) + '%">' + fmtTime(new Date(viewStart + k * SLOT_MS)) + "</div>"; }
+    headTimes.innerHTML = h;
+  }
+
+  function renderGrid() {
+    renderHead();
+    var html = "", endT = viewStart + WINDOW_MS;
+    for (var k = 0; k < DATA.length; k++) {
+      var c = DATA[k], blocks = programsInWindow(c, viewStart, endT), cells = "";
+      for (var b = 0; b < blocks.length; b++) {
+        var bl = blocks[b];
+        var left = (bl.start - viewStart) / WINDOW_MS * 100, right = (bl.end - viewStart) / WINDOW_MS * 100;
+        if (left < 0) left = 0; if (right > 100) right = 100;
+        var w = right - left; if (w <= 0.3) continue;
+        var mark = hasReminder(k, bl.seq) ? "⏰ " : "";
+        cells += '<div class="prog" data-seq="' + bl.seq + '" style="left:' + left + '%;width:' + w + '%">' + mark + esc(bl.item ? bl.item.t : "") + "</div>";
+      }
+      html += '<div class="row" data-i="' + k + '"><div class="chcell" style="--c:' + c.color + '"><div class="n">' + c.n + '</div><div class="nm">' + esc(c.name) + "</div></div><div class=\"rowtime\">" + cells + "</div></div>";
+    }
+    rowsWrap.innerHTML = html;
+    rows = rowsWrap.querySelectorAll(".row");
+    highlightSel();
+    scrollToRow();
+  }
+
+  function scrollToRow() {
+    var rowH = rows[0] ? rows[0].offsetHeight : 76, viewH = bodyEl.clientHeight;
+    var top = selRow * rowH, bottom = top + rowH;
+    if (top < scrollY) scrollY = top; else if (bottom > scrollY + viewH) scrollY = bottom - viewH;
+    var maxS = rows.length * rowH - viewH; if (maxS < 0) maxS = 0;
+    if (scrollY > maxS) scrollY = maxS; if (scrollY < 0) scrollY = 0;
+    rowsWrap.style.transform = "translateY(" + (-scrollY) + "px)";
+  }
+
+  function highlightSel() {
+    var old = rowsWrap.querySelectorAll(".prog.cellsel");
+    for (var i = 0; i < old.length; i++) old[i].className = "prog";
+    var ch = DATA[selRow], prog = progAt(ch, selTime);
+    if (rows[selRow]) {
+      var blocks = rows[selRow].querySelectorAll(".prog");
+      for (var j = 0; j < blocks.length; j++) { if (parseInt(blocks[j].getAttribute("data-seq"), 10) === prog.seq) { blocks[j].className = "prog cellsel"; break; } }
+    }
+    updateBanner(ch, prog);
+    updatePreview();
+  }
+
+  function updateBanner(ch, prog) {
+    var now = Date.now();
+    prevNum.textContent = ch.n; prevName.textContent = ch.name; prevEmoji.textContent = ch.emoji || "";
+    el("gPrev").style.background = "linear-gradient(135deg, " + ch.color + ", #160a33)";
+    gTitle.textContent = "CH " + ch.n + "  " + ch.name + "  —  " + (prog.item ? prog.item.t : "");
+    var range = fmtTime(new Date(prog.start)) + " – " + fmtTime(new Date(prog.end));
+    if (prog.start <= now && now < prog.end) gAir.textContent = "● ON NOW  ·  " + range;
+    else if (hasReminder(selRow, prog.seq)) gAir.textContent = "⏰ Reminder set  ·  " + range;
+    else gAir.textContent = "⏰ " + range + "  ·  OK to set a reminder";
+    gDesc.textContent = ch.desc || "";
+  }
+
+  function moveChannel(d) { var n = selRow + d; if (n < 0) n = 0; if (n >= DATA.length) n = DATA.length - 1; selRow = n; highlightSel(); scrollToRow(); }
+  function moveTime(dir) {
+    var ch = DATA[selRow], prog = progAt(ch, selTime), floorNow = floorHalf(Date.now());
+    var probe = dir > 0 ? prog.end + 1000 : prog.start - 1000;
+    if (probe < floorNow) probe = floorNow;
+    var np = progAt(ch, probe);
+    selTime = np.start < floorNow ? floorNow : np.start + 1000;
+    if (np.start < viewStart || np.start >= viewStart + WINDOW_MS) { viewStart = floorHalf(np.start); renderGrid(); }
+    else highlightSel();
+  }
+
+  function stopPreview() { clearTimeout(previewTimer); try { preview.pause(); preview.removeAttribute("src"); preview.load(); } catch (e) {} preview.style.opacity = "0"; preview.setAttribute("data-u", ""); }
+  function updatePreview() {
+    clearTimeout(previewTimer);
+    if (mode !== "guide") return;
+    previewTimer = setTimeout(function () {
+      if (mode !== "guide") return;
+      var ch = DATA[selRow], prog = progAt(ch, Date.now());
+      if (!prog.item) { stopPreview(); return; }
+      if (preview.getAttribute("data-u") === prog.item.u) return;
+      preview.setAttribute("data-u", prog.item.u); preview.style.opacity = "0"; preview.muted = true; preview.src = prog.item.u;
+      var p = preview.play(); if (p && p.catch) p.catch(function () {});
+    }, 550);
+  }
+
+  function showGuide() {
+    mode = "guide"; playerEl.className = "player"; guideEl.className = "guide on";
+    try { video.pause(); video.removeAttribute("src"); video.load(); } catch (e) {}
+    selRow = cIndex; selTime = Date.now(); viewStart = floorHalf(Date.now());
+    renderGrid();
+  }
+
+  function channelByNumber(num) { for (var k = 0; k < DATA.length; k++) { if (DATA[k].n === num) return k; } return -1; }
+
+  function tuneSeq(chIdx, seq) {
+    stopPreview(); cIndex = chIdx; iIndex = wrap(DATA[cIndex], seq);
+    mode = "player"; guideEl.className = "guide"; playerEl.className = "player on"; errStreak = 0; loadItem(); showInfo();
+  }
+  function tune(chIdx) { tuneSeq(chIdx, progAt(DATA[chIdx], Date.now()).seq); }
+
+  function loadItem() {
+    var ch = DATA[cIndex];
+    if (!ch.items.length) { surf(1); return; }
+    iIndex = wrap(ch, iIndex); spinner.className = "on"; video.src = ch.items[iIndex].u;
+    var p = video.play(); if (p && p.catch) p.catch(function () { try { video.muted = false; } catch (e) {} });
+    updateInfo();
+  }
+  function nextItem() { iIndex = wrap(DATA[cIndex], iIndex + 1); loadItem(); }
+  function surf(delta) { cIndex = (cIndex + delta + DATA.length) % DATA.length; iIndex = progAt(DATA[cIndex], Date.now()).seq; errStreak = 0; loadItem(); showInfo(); }
+
+  function updateInfo() {
+    var ch = DATA[cIndex], it = ch.items[wrap(ch, iIndex)] || { t: "", y: "" };
+    infobar.style.setProperty("--c", ch.color); ibNum.textContent = ch.n;
+    ibChan.textContent = (ch.emoji ? ch.emoji + "  " : "") + ch.name;
+    ibTitle.textContent = it.t + (it.y ? "  (" + it.y + ")" : "");
+  }
+  function showInfo() { infobar.className = ""; clearTimeout(infoTimer); infoTimer = setTimeout(function () { infobar.className = "hide"; }, 4500); }
+  function toast(msg) { toastEl.textContent = msg; toastEl.className = "on"; clearTimeout(toastTimer); toastTimer = setTimeout(function () { toastEl.className = ""; }, 2200); }
+
+  function pushDigit(d) { dialBuf += d; dialEl.textContent = dialBuf; dialEl.className = "on"; clearTimeout(dialTimer); dialTimer = setTimeout(resolveDial, 1500); }
+  function resolveDial() { clearTimeout(dialTimer); dialEl.className = ""; if (!dialBuf) return; var num = parseInt(dialBuf, 10); dialBuf = ""; var idx = channelByNumber(num); if (idx >= 0) tune(idx); else toast("No channel " + num); }
+
+  function okGuide() {
+    if (dialBuf) { resolveDial(); return; }
+    var ch = DATA[selRow], prog = progAt(ch, selTime), now = Date.now();
+    if (prog.start <= now && now < prog.end) { tuneSeq(selRow, prog.seq); return; }
+    if (hasReminder(selRow, prog.seq)) {
+      for (var i = 0; i < reminders.length; i++) { if (reminders[i].chIdx === selRow && reminders[i].seq === prog.seq) { reminders.splice(i, 1); break; } }
+      toast("Reminder removed");
+    } else {
+      reminders.push({ chIdx: selRow, seq: prog.seq, airTime: prog.start, title: prog.item ? prog.item.t : "", n: ch.n, name: ch.name });
+      toast("⏰ Reminder set — Ch " + ch.n + " at " + fmtTime(new Date(prog.start)));
+    }
+    renderGrid();
+  }
+
+  function checkReminders() {
+    if (modalOpen) return; var now = Date.now();
+    for (var i = 0; i < reminders.length; i++) { if (now >= reminders[i].airTime - 500) { showModal(reminders.splice(i, 1)[0]); return; } }
+  }
+  function showModal(rem) { modalOpen = true; modalRem = rem; modalSel = 0; mText.innerHTML = esc(rem.title) + '<span class="mch">is starting on Ch ' + rem.n + " " + esc(rem.name) + "</span>"; modalEl.className = "on"; paintModal(); }
+  function paintModal() { mYes.className = "btn" + (modalSel === 0 ? " sel" : ""); mNo.className = "btn" + (modalSel === 1 ? " sel" : ""); }
+  function closeModal() { modalOpen = false; modalRem = null; modalEl.className = ""; }
+  function confirmModal() { var r = modalRem; closeModal(); if (r) tuneSeq(r.chIdx, r.seq); }
+
+  function goBack() { if (mode === "player") showGuide(); else { stopPreview(); window.location.href = "index.html"; } }
+  function seek(secs) { try { var t = video.currentTime + secs; if (t < 0) t = 0; video.currentTime = t; } catch (e) {} showInfo(); }
+
+  function onKey(e) {
+    var k = e.keyCode;
+    if (modalOpen) {
+      if (k === KEY.LEFT || k === KEY.RIGHT) { modalSel = modalSel === 0 ? 1 : 0; paintModal(); }
+      else if (k === KEY.OK) { if (modalSel === 0) confirmModal(); else closeModal(); }
+      else if (k === KEY.BACK || k === KEY.BACK2 || k === KEY.ESC) closeModal();
+      e.preventDefault(); return;
+    }
+    if (k >= 48 && k <= 57) { e.preventDefault(); pushDigit(String(k - 48)); return; }
+    if (k >= 96 && k <= 105) { e.preventDefault(); pushDigit(String(k - 96)); return; }
+    if (k === KEY.BACK || k === KEY.BACK2 || k === KEY.ESC) { e.preventDefault(); goBack(); return; }
+
+    if (mode === "guide") {
+      if (k === KEY.UP) { e.preventDefault(); moveChannel(-1); }
+      else if (k === KEY.DOWN) { e.preventDefault(); moveChannel(1); }
+      else if (k === KEY.LEFT) { e.preventDefault(); moveTime(-1); }
+      else if (k === KEY.RIGHT) { e.preventDefault(); moveTime(1); }
+      else if (k === KEY.OK) { e.preventDefault(); okGuide(); }
+      return;
+    }
+    if (k === KEY.UP) { e.preventDefault(); surf(1); }
+    else if (k === KEY.DOWN) { e.preventDefault(); surf(-1); }
+    else if (k === KEY.LEFT) { e.preventDefault(); seek(-15); }
+    else if (k === KEY.RIGHT) { e.preventDefault(); seek(15); }
+    else if (k === KEY.OK) { e.preventDefault(); if (dialBuf) resolveDial(); else showGuide(); }
+  }
+
+  video.addEventListener("ended", function () { errStreak = 0; nextItem(); });
+  video.addEventListener("playing", function () { spinner.className = ""; errStreak = 0; clearTimeout(stallTimer); });
+  video.addEventListener("error", function () { errStreak += 1; if (errStreak > DATA[cIndex].items.length || errStreak > 12) { spinner.className = ""; toast("Channel unavailable"); return; } nextItem(); });
+  video.addEventListener("waiting", function () { clearTimeout(stallTimer); stallTimer = setTimeout(function () { if (mode === "player") { errStreak += 1; nextItem(); } }, 12000); });
+  preview.addEventListener("playing", function () { preview.style.opacity = "1"; });
+  preview.addEventListener("loadeddata", function () { preview.style.opacity = "1"; });
+
+  function tick() { clockEl.textContent = fmtTime(new Date()); }
+
+  window.addEventListener("keydown", onKey, true);
+  document.addEventListener("mousemove", function () { if (mode === "player") showInfo(); });
+  viewStart = floorHalf(Date.now());
+  renderGrid();
+  tick();
+  setInterval(tick, 15000);
+  setInterval(checkReminders, 8000);
+  setInterval(function () { if (mode === "guide" && !modalOpen) renderGrid(); }, 60000);
+  try { window.focus(); } catch (e) {}
+  if (!DATA.length) { rowsWrap.innerHTML = '<div style="padding:40px;font-size:24px;color:#c9a9ff">No channel data.</div>'; }
+})();
+</script>
+</body>
+</html>

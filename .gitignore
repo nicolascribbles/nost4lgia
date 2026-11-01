@@ -1,0 +1,54 @@
+# Generated channel data (regenerate with spelunkr-src/build_channels.js)
+launcher/spelunkr-channels.js
+
+# Build output / staging
+dist/
+tv-app/
+*.ipk
+
+# Node / Python
+node_modules/
+__pycache__/
+*.pyc
+
+# TV pairing / inventory / secrets (personal)
+lgtv.sqlite
+client-key.txt
+tv-inventory.json
+apps-now.txt
+
+# Local, un-shipped dev + TV-control scripts
+proxy/
+server.py
+Start-LivingRoom.ps1
+stamp_ipk.py
+pair_debug.py
+pair_wait.py
+wipe_listen.py
+who_foreground.py
+home_watch.py
+open_home.py
+hide_bloat.py
+remove_apps.py
+check_apps.py
+inventory.py
+inspect_spelunkr.py
+spelunkr-src/analyze.js
+spelunkr-src/validate.js
+spelunkr-src/probe.js
+spelunkr-src/probe2.js
+spelunkr-src/sample-manifest.json
+spelunkr-src/lineup.json
+
+# Early scratch builds + staging leftovers (superseded by launcher/)
+home-launcher/
+spelunkr-app/
+spelunkr-index.html
+package-lock.json
+
+# Vendored design reference (not ours)
+.design-skills/
+
+# OS
+.DS_Store
+Thumbs.db
