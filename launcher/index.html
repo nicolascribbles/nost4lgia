@@ -5,197 +5,79 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Living Room</title>
 <style>
-  html, body {
-    margin: 0;
-    height: 100%;
-    background: #000;
-    color: #fff;
-    font-family: -apple-system, system-ui, "Segoe UI", "LG Smart", sans-serif;
-    overflow: hidden;
-  }
-  body { user-select: none; }
-  .stage {
-    width: 1920px;
-    height: 1080px;
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    margin-left: -960px;
-    margin-top: -540px;
-    background: #000;
-    transform-origin: center center;
-  }
-  .shell {
-    box-sizing: border-box;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    padding: 52px 56px 40px;
-  }
-  header {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    margin: 0 8px 28px;
-  }
-  .brand {
-    font-size: 34px;
-    font-weight: 600;
-    letter-spacing: -0.03em;
-    color: #fff;
-  }
+  @font-face { font-family: "NostMono"; src: url("fonts/space-mono-400.woff2") format("woff2"); font-weight: 400; font-display: swap; }
+  @font-face { font-family: "NostMono"; src: url("fonts/space-mono-700.woff2") format("woff2"); font-weight: 700; font-display: swap; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: #0b0b12; color: #fff;
+    font-family: -apple-system, system-ui, "Segoe UI", "LG Smart", sans-serif; overflow: hidden; user-select: none; }
+  .stage { width: 1920px; height: 1080px; position: absolute; left: 50%; top: 50%;
+    margin-left: -960px; margin-top: -540px; background: #0b0b12; transform-origin: center center; }
+  .shell { height: 100%; display: flex; flex-direction: column; padding: 40px 56px 28px; }
+  header { display: flex; justify-content: space-between; align-items: baseline; margin: 0 4px 18px; }
+  .brand { font-size: 30px; font-weight: 700; letter-spacing: -0.03em; }
   .when { text-align: right; }
-  .clock {
-    font-size: 22px;
-    font-weight: 600;
-    color: #fff;
-    font-variant-numeric: tabular-nums;
-  }
-  .date {
-    margin-top: 2px;
-    font-size: 16px;
-    color: #a7a7a7;
-  }
-  .grid {
-    flex: 1;
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    grid-template-rows: 1fr 1fr 1fr 1fr;
-    grid-gap: 22px 16px;
-    min-height: 0;
-    padding: 8px;
-  }
-  .tile {
-    appearance: none;
-    -webkit-appearance: none;
-    border: 0;
-    margin: 0;
-    padding: 0;
-    border-radius: 16px;
-    background: #181818;
-    color: #fff;
-    text-align: center;
-    min-width: 0;
-    cursor: pointer;
-    position: relative;
-    overflow: hidden;
-    transition: transform 240ms cubic-bezier(0.22, 1, 0.36, 1), background-color 240ms cubic-bezier(0.22, 1, 0.36, 1);
-  }
-  .mark {
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 0;
-    bottom: 52px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .wash {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    width: 240px;
-    height: 240px;
-    margin-left: -120px;
-    margin-top: -120px;
-    border-radius: 50%;
-    background: radial-gradient(circle, var(--glow) 0%, rgba(0, 0, 0, 0) 68%);
-    opacity: 0;
-    transform: scale(0.64);
-    transition: opacity 240ms cubic-bezier(0.22, 1, 0.36, 1), transform 280ms cubic-bezier(0.22, 1, 0.36, 1);
-    pointer-events: none;
-  }
-  .tile.focused .wash {
-    opacity: 0.5;
-    transform: scale(1);
-  }
-  .logo {
-    position: relative;
-    z-index: 1;
-    width: 62%;
-    height: 64%;
-    margin: 0;
-    object-fit: contain;
-  }
-  .logo.mono {
-    filter: brightness(0) invert(1);
-  }
-  .tile .name {
-    position: absolute;
-    left: 10px;
-    right: 10px;
-    bottom: 16px;
-    z-index: 1;
-    font-size: 22px;
-    font-weight: 700;
-    letter-spacing: -0.02em;
-    line-height: 1;
-  }
-  .tile.focused {
-    z-index: 2;
-    background: #242424;
-    transform: scale(1.04);
-    box-shadow: 0 0 0 2px #fff;
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .wash { transition: none; }
-  }
-  footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    margin: 26px 8px 0;
-  }
-  .action { font-size: 20px; color: #a7a7a7; }
-  .keys {
-    font-size: 15px;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: #6a6a6a;
-  }
-  .site {
-    display: none;
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 1920px;
-    height: 1080px;
-    border: 0;
-    background: transparent;
-    z-index: 6;
-  }
-  .site.open { display: block; }
-  /* While Spelunkr plays, make the whole stack transparent so the TV's
-     hardware video plane shows through instead of our black background. */
-  body.playing, body.playing .stage { background: transparent; }
+  .clock { font-size: 22px; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .date { margin-top: 2px; font-size: 15px; color: #a7a7a7; }
+
+  .rows { flex: 1; overflow: hidden; position: relative; }
+  .rowsInner { position: relative; transition: transform .2s ease; padding: 6px 2px 10px; }
+
+  /* Hero (vaporwave) */
+  .hero { position: relative; height: 236px; border-radius: 22px; overflow: hidden; margin-bottom: 22px; cursor: pointer; z-index: 0;
+    background: linear-gradient(115deg, #180a3a 0%, #5a1e9e 32%, #b2309e 62%, #ff6ec7 82%, #4df5ff 112%);
+    display: flex; align-items: center; padding: 0 52px; transition: box-shadow .15s ease, transform .15s ease; }
+  .hero .sun { position: absolute; right: 72px; top: 24px; width: 166px; height: 166px; border-radius: 50%; z-index: 0;
+    background:
+      repeating-linear-gradient(0deg, transparent 0px, transparent 13px, rgba(24,10,58,.85) 13px, rgba(24,10,58,.85) 18px),
+      radial-gradient(circle at 50% 42%, #fff07a 0%, #ff8a3d 38%, #ff2e97 70%, #b36bff 100%);
+    box-shadow: 0 0 60px rgba(255,110,199,.7); }
+  .hero .grid { position: absolute; left: 0; right: 0; bottom: 0; height: 84px; z-index: 0; pointer-events: none; opacity: .5;
+    background-image:
+      repeating-linear-gradient(90deg, rgba(77,245,255,.55) 0px, rgba(77,245,255,.55) 2px, transparent 2px, transparent 62px),
+      linear-gradient(0deg, rgba(77,245,255,.5), transparent); }
+  .hero .hicon { position: relative; z-index: 1; width: 128px; height: 128px; flex: none; margin-right: 34px; filter: drop-shadow(0 6px 16px rgba(0,0,0,.45)); }
+  .hero .htextwrap { position: relative; z-index: 1; }
+  .hero .hname { font-size: 60px; font-weight: 700; letter-spacing: 2px; font-family: "NostMono", "Courier New", monospace; color: #fff;
+    text-shadow: 0 0 14px rgba(77,245,255,.9), 0 0 30px rgba(255,110,199,.7), 3px 3px 0 rgba(0,0,0,.3); }
+  .hero .hname .d { color: #4df5ff; }
+  .hero .htag { font-size: 22px; color: #f6ecff; margin-top: 10px; text-shadow: 0 2px 8px rgba(0,0,0,.4); }
+  .hero .hopen { display: inline-block; margin-top: 16px; font-size: 19px; font-weight: 700; color: #15103a;
+    background: linear-gradient(90deg, #fff07a, #4df5ff); border-radius: 12px; padding: 11px 26px; box-shadow: 0 6px 18px rgba(0,0,0,.35); }
+  .hero.focused { box-shadow: 0 0 0 4px #fff, 0 18px 46px rgba(0,0,0,.55); transform: scale(1.012); }
+
+  /* Category rows */
+  .catrow { margin-bottom: 16px; }
+  .catlabel { font-size: 19px; font-weight: 700; color: #cfd2d8; margin: 0 4px 8px; }
+  .strip { position: relative; overflow: hidden; padding: 10px 7px; }
+  .stripInner { position: relative; display: flex; transition: transform .2s ease; }
+  .tile { position: relative; flex: none; width: 218px; height: 150px; margin-right: 18px; border-radius: 16px;
+    background: #16161e; overflow: hidden; cursor: pointer; transition: transform .15s ease, background-color .15s ease; }
+  .tile .wash { position: absolute; left: 50%; top: 42%; width: 250px; height: 250px; margin-left: -125px; margin-top: -125px;
+    border-radius: 50%; background: radial-gradient(circle, var(--glow) 0%, rgba(0,0,0,0) 65%); opacity: .3; transform: scale(.85);
+    transition: opacity .15s ease, transform .2s ease; pointer-events: none; }
+  .tile.focused .wash { opacity: .72; transform: scale(1.05); }
+  .tile .logo { position: absolute; left: 15%; right: 15%; top: 17%; bottom: 17%; z-index: 1; object-fit: contain; }
+  .tile .logo.mono { filter: brightness(0) invert(1); }
+  .tile.focused { background: #26262f; transform: scale(1.06); box-shadow: 0 0 0 3px #fff; z-index: 2; }
+
+  footer { display: flex; justify-content: space-between; align-items: baseline; margin: 12px 4px 0; }
+  .action { font-size: 18px; color: #a7a7a7; }
+  .keys { font-size: 14px; letter-spacing: .08em; text-transform: uppercase; color: #6a6a6a; }
 </style>
 </head>
 <body>
-  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
-    <defs>
-      <clipPath id="squircle" clipPathUnits="objectBoundingBox">
-        <path d="M0.22,0 H0.78 C0.94,0 1,0.06 1,0.22 V0.78 C1,0.94 0.94,1 0.78,1 H0.22 C0.06,1 0,0.94 0,0.78 V0.22 C0,0.06 0.06,0 0.22,0 Z"/>
-      </clipPath>
-    </defs>
-  </svg>
   <div class="stage" id="stage">
     <div class="shell">
       <header>
         <div class="brand">Living Room</div>
-        <div class="when">
-          <div class="clock" id="clock"></div>
-          <div class="date" id="date"></div>
-        </div>
+        <div class="when"><div class="clock" id="clock"></div><div class="date" id="date"></div></div>
       </header>
-      <div class="grid" id="grid"></div>
+      <div class="rows" id="rows"><div class="rowsInner" id="rowsInner"></div></div>
       <footer>
         <div class="action" id="action"></div>
         <div class="keys">Arrows move · Enter opens</div>
       </footer>
     </div>
-    <iframe class="site" id="site" title="Spelunkr" allow="autoplay; fullscreen"></iframe>
-    <div id="hud" style="display:none;position:absolute;left:18px;top:16px;z-index:9;background:rgba(0,0,0,0.72);color:#fff;font-size:18px;font-weight:600;padding:6px 14px;border-radius:10px;">Back to exit</div>
   </div>
 <script>
 (function () {
@@ -217,131 +99,56 @@
     { name: "Spotify", url: "https://open.spotify.com", web: true, logo: "spotify.svg", mono: true, glow: "#1ed760" },
     { name: "Developer Mode", url: "https://webostv.developer.lge.com", appId: "com.palmdts.devmode", logo: "developermode.svg", mono: true, glow: "#8eb4ff" }
   ];
+  var byName = {};
+  for (var si = 0; si < SERVICES.length; si++) byName[SERVICES[si].name] = SERVICES[si];
 
-  var grid = document.getElementById("grid");
+  var HERO = byName["Nost4lgia"];
+  var CATEGORIES = [
+    { title: "Streaming", items: ["Netflix", "Disney+", "Hulu", "HBO Max", "Paramount+", "Peacock", "Prime Video", "Apple TV"] },
+    { title: "Free & Retro", items: ["Nost4lgia", "Tubi", "Pluto TV", "YouTube"] },
+    { title: "Anime & Comedy", items: ["Crunchyroll", "Dropout"] },
+    { title: "Music & System", items: ["Spotify", "Developer Mode"] }
+  ];
+
+  var rowsEl = document.getElementById("rows");
+  var rowsInner = document.getElementById("rowsInner");
   var clock = document.getElementById("clock");
   var dateLine = document.getElementById("date");
   var action = document.getElementById("action");
   var stage = document.getElementById("stage");
-  var hud = document.getElementById("hud");
-  var focusKeeper = null;
-  var hudTimer = null;
-  var buttons = [];
-  var index = 0;
-  var COLS = 4;
-  var leftOnPurpose = false;
-  var lastWake = 0;
-  var siteOpen = false;
-  var PROXY = "http://192.168.0.156:8733/";
 
-  function fit() {
-    var scale = Math.min(window.innerWidth / 1920, window.innerHeight / 1080);
-    stage.style.transform = "scale(" + scale + ")";
-  }
+  var navEls = [], navSvc = [], rowEls = [], stripInners = [], stripScroll = [];
+  var selRow = 0, selCol = 0, rowsScroll = 0;
+  var leftOnPurpose = false, lastWake = 0;
 
-  function isTV() {
-    return typeof window.PalmSystem !== "undefined" || typeof window.PalmServiceBridge !== "undefined";
-  }
+  function fit() { stage.style.transform = "scale(" + Math.min(window.innerWidth / 1920, window.innerHeight / 1080) + ")"; }
+  function isTV() { return typeof window.PalmSystem !== "undefined" || typeof window.PalmServiceBridge !== "undefined"; }
 
   function tick() {
-    var now = new Date();
-    var hours = now.getHours();
-    var minutes = now.getMinutes();
-    var suffix = hours >= 12 ? "PM" : "AM";
-    hours = hours % 12;
-    if (hours === 0) hours = 12;
+    var now = new Date(), h = now.getHours(), m = now.getMinutes(), ap = h >= 12 ? "PM" : "AM";
+    h = h % 12; if (h === 0) h = 12;
     var days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
     var months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-    clock.textContent = hours + ":" + (minutes < 10 ? "0" : "") + minutes + " " + suffix;
+    clock.textContent = h + ":" + (m < 10 ? "0" : "") + m + " " + ap;
     dateLine.textContent = days[now.getDay()] + ", " + months[now.getMonth()] + " " + now.getDate();
   }
 
   function luna(method, params, onDone) {
-    if (typeof window.PalmServiceBridge === "undefined") {
-      if (onDone) onDone({ returnValue: false });
-      return;
-    }
+    if (typeof window.PalmServiceBridge === "undefined") { if (onDone) onDone({ returnValue: false }); return; }
     var bridge = new window.PalmServiceBridge();
-    bridge.onservicecallback = function (message) {
-      var result = { returnValue: false };
-      try { result = JSON.parse(message); } catch (error) {}
-      if (onDone) onDone(result);
-    };
+    bridge.onservicecallback = function (message) { var r = { returnValue: false }; try { r = JSON.parse(message); } catch (e) {} if (onDone) onDone(r); };
     bridge.call("luna://com.webos.applicationManager/" + method, JSON.stringify(params));
   }
-
-  function openHere(url) {
-    window.location.assign(url);
-  }
-
+  function openHere(url) { window.location.assign(url); }
   function openInBrowser(url) {
-    luna("launch", { id: "com.webos.app.browser", params: { target: url } }, function (result) {
-      if (result && result.returnValue !== false) return;
-      luna("launch", { id: "com.webos.app.browser", params: { url: url } }, function (second) {
-        if (!second || second.returnValue === false) openHere(url);
-      });
+    luna("launch", { id: "com.webos.app.browser", params: { target: url } }, function (r) {
+      if (r && r.returnValue !== false) return;
+      luna("launch", { id: "com.webos.app.browser", params: { url: url } }, function (s) { if (!s || s.returnValue === false) openHere(url); });
     });
   }
-
   function openOnPC(url) {
-    fetch("/open", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ url: url })
-    }).catch(function () {
-      window.location.assign(url);
-    });
-  }
-
-  function sendKey(down, keyCode) {
-    var frame = document.getElementById("site");
-    if (!frame || !frame.contentWindow) return;
-    try {
-      frame.contentWindow.postMessage({ type: "key", down: down, keyCode: keyCode }, "*");
-    } catch (error) {}
-  }
-
-  function showSite() {
-    var site = document.getElementById("site");
-    siteOpen = true;
-    site.src = "spelunkr.html";
-    site.className = "site open";
-    // Transparent + no transform so webOS composites hardware video underneath.
-    document.body.classList.add("playing");
-    stage.style.transform = "none";
-    try {
-      if (window.PalmSystem && window.PalmSystem.setCursorVisible) {
-        window.PalmSystem.setCursorVisible(false);
-      }
-    } catch (error) {}
-    if (focusKeeper) { clearInterval(focusKeeper); focusKeeper = null; }
-    if (hud) hud.style.display = "none";
-    // spelunkr.html is our own same-origin app; give it real focus so its
-    // D-pad and number keys work natively. It posts "spelunkr-exit" to leave.
-    setTimeout(function () {
-      try {
-        site.focus();
-        if (site.contentWindow) site.contentWindow.focus();
-      } catch (e) {}
-    }, 60);
-  }
-
-  function hideSite() {
-    var site = document.getElementById("site");
-    siteOpen = false;
-    if (focusKeeper) { clearInterval(focusKeeper); focusKeeper = null; }
-    if (hudTimer) { clearTimeout(hudTimer); hudTimer = null; }
-    if (hud) hud.style.display = "none";
-    site.className = "site";
-    site.src = "about:blank";
-    document.body.classList.remove("playing");
-    fit();
-    try {
-      if (window.PalmSystem && window.PalmSystem.setCursorVisible) {
-        window.PalmSystem.setCursorVisible(true);
-      }
-    } catch (error) {}
-    paint();
+    fetch("/open", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ url: url }) })
+      .catch(function () { window.location.assign(url); });
   }
 
   function wake() {
@@ -352,135 +159,114 @@
   }
 
   function activate(service) {
-    if (service.keys) {
-      // Navigate the whole app to our Spelunkr page (top-level so webOS
-      // composites the <video>; an iframe would play audio only).
-      window.location.href = "spelunkr.html";
-      return;
-    }
-    if (!isTV()) {
-      openOnPC(service.url);
-      return;
-    }
+    if (service.keys) { window.location.href = "spelunkr.html"; return; } // Nost4lgia (top-level so video composites)
+    if (!isTV()) { openOnPC(service.url); return; }
     leftOnPurpose = true;
-    if (service.web || !service.appId) {
-      openInBrowser(service.url);
-      return;
-    }
-    luna("launch", { id: service.appId }, function (result) {
-      if (!result || result.returnValue === false) openHere(service.url);
-    });
+    if (service.web || !service.appId) { openInBrowser(service.url); return; }
+    luna("launch", { id: service.appId }, function (r) { if (!r || r.returnValue === false) openHere(service.url); });
   }
 
   function describe(service) {
-    if (!isTV()) return "Enter opens " + service.name;
-    if (service.web || !service.appId) return "Enter opens " + service.name + " here";
-    return "Enter opens " + service.name + " on the TV";
+    if (!service) return "";
+    if (!isTV()) return "Open " + service.name;
+    if (service.web || !service.appId) return "Open " + service.name;
+    return "Open " + service.name + " on the TV";
   }
 
-  function paint() {
-    var i;
-    for (i = 0; i < buttons.length; i++) {
-      buttons[i].className = i === index ? "tile focused" : "tile";
+  function buildTile(service) {
+    var t = document.createElement("div");
+    t.className = "tile"; t.style.setProperty("--glow", service.glow);
+    var wash = document.createElement("span"); wash.className = "wash"; t.appendChild(wash);
+    var logo = document.createElement("img"); logo.className = service.mono ? "logo mono" : "logo"; logo.alt = ""; logo.src = "logos/" + service.logo; t.appendChild(logo);
+    return t;
+  }
+
+  // Hero (row 0)
+  (function () {
+    var hero = document.createElement("div");
+    hero.className = "hero";
+    var sun = document.createElement("div"); sun.className = "sun";
+    var grid = document.createElement("div"); grid.className = "grid";
+    var icon = document.createElement("img"); icon.className = "hicon"; icon.src = "logos/" + HERO.logo; icon.alt = "";
+    var text = document.createElement("div"); text.className = "htextwrap";
+    var nm = document.createElement("div"); nm.className = "hname"; nm.innerHTML = 'NOST<span class="d">4</span>LGIA';
+    var tag = document.createElement("div"); tag.className = "htag"; tag.textContent = "Cable TV, but weirder — your retro channels";
+    var open = document.createElement("div"); open.className = "hopen"; open.textContent = "▶  Open";
+    text.appendChild(nm); text.appendChild(tag); text.appendChild(open);
+    hero.appendChild(sun); hero.appendChild(grid); hero.appendChild(icon); hero.appendChild(text);
+    hero.addEventListener("click", function () { setFocus(0, 0); activate(HERO); });
+    rowsInner.appendChild(hero);
+    navEls.push([hero]); navSvc.push([HERO]); rowEls.push(hero); stripInners.push(null); stripScroll.push(0);
+  })();
+
+  // Category rows
+  for (var ci = 0; ci < CATEGORIES.length; ci++) {
+    (function (cat, rowIndex) {
+      var row = document.createElement("div"); row.className = "catrow";
+      var label = document.createElement("div"); label.className = "catlabel"; label.textContent = cat.title; row.appendChild(label);
+      var strip = document.createElement("div"); strip.className = "strip";
+      var inner = document.createElement("div"); inner.className = "stripInner";
+      var els = [], svcs = [];
+      for (var k = 0; k < cat.items.length; k++) {
+        var s = byName[cat.items[k]]; if (!s) continue;
+        var tile = buildTile(s);
+        (function (svc, r, c) { tile.addEventListener("click", function () { setFocus(r, c); activate(svc); }); })(s, rowIndex, els.length);
+        inner.appendChild(tile); els.push(tile); svcs.push(s);
+      }
+      strip.appendChild(inner); row.appendChild(strip); rowsInner.appendChild(row);
+      navEls.push(els); navSvc.push(svcs); rowEls.push(row); stripInners.push(inner); stripScroll.push(0);
+    })(CATEGORIES[ci], ci + 1);
+  }
+
+  function baseClass(r) { return r === 0 ? "hero" : "tile"; }
+
+  function scrollIntoView() {
+    var rowEl = rowEls[selRow], vh = rowsEl.clientHeight;
+    var top = rowEl.offsetTop, bottom = top + rowEl.offsetHeight;
+    if (top - rowsScroll < 0) rowsScroll = top - 10;
+    else if (bottom - rowsScroll > vh) rowsScroll = bottom - vh + 10;
+    if (rowsScroll < 0) rowsScroll = 0;
+    rowsInner.style.transform = "translateY(" + (-rowsScroll) + "px)";
+    var inner = stripInners[selRow];
+    if (inner) {
+      var tile = navEls[selRow][selCol], view = inner.parentNode, vw = view.clientWidth;
+      var left = tile.offsetLeft, right = left + tile.offsetWidth, cur = stripScroll[selRow];
+      if (left - cur < 0) cur = left - 16;
+      else if (right - cur > vw) cur = right - vw + 16;
+      if (cur < 0) cur = 0;
+      stripScroll[selRow] = cur;
+      inner.style.transform = "translateX(" + (-cur) + "px)";
     }
-    action.textContent = describe(SERVICES[index]);
-    if (buttons[index]) buttons[index].focus();
   }
 
-  function move(delta) {
-    var next = index + delta;
-    if (next < 0 || next >= SERVICES.length) return;
-    index = next;
-    paint();
-  }
-
-  var i;
-  for (i = 0; i < SERVICES.length; i++) {
-    (function (service, itemIndex) {
-      var button = document.createElement("button");
-      button.className = "tile";
-      button.type = "button";
-      button.style.setProperty("--glow", service.glow);
-      var mark = document.createElement("div");
-      mark.className = "mark";
-      var wash = document.createElement("span");
-      wash.className = "wash";
-      var logo = document.createElement("img");
-      logo.className = service.mono ? "logo mono" : "logo";
-      logo.alt = "";
-      logo.src = "logos/" + service.logo;
-      mark.appendChild(wash);
-      mark.appendChild(logo);
-      var name = document.createElement("div");
-      name.className = "name";
-      name.textContent = service.name;
-      button.appendChild(mark);
-      button.appendChild(name);
-      button.addEventListener("click", function () {
-        index = itemIndex;
-        paint();
-        activate(service);
-      });
-      grid.appendChild(button);
-      buttons.push(button);
-    })(SERVICES[i], i);
+  function setFocus(r, c) {
+    if (r < 0) r = 0; if (r >= navEls.length) r = navEls.length - 1;
+    if (c < 0) c = 0; if (c >= navEls[r].length) c = navEls[r].length - 1;
+    navEls[selRow][selCol].className = baseClass(selRow);
+    selRow = r; selCol = c;
+    navEls[selRow][selCol].className = baseClass(selRow) + " focused";
+    scrollIntoView();
+    action.textContent = describe(navSvc[selRow][selCol]);
   }
 
   document.addEventListener("keydown", function (event) {
     var key = event.keyCode;
-    if (siteOpen) {
-      // Our in-app Spelunkr owns all keys while open and tells us when to close.
-      return;
-    }
-    if (key === 37) { event.preventDefault(); move(-1); }
-    else if (key === 39) { event.preventDefault(); move(1); }
-    else if (key === 38) { event.preventDefault(); move(-COLS); }
-    else if (key === 40) { event.preventDefault(); move(COLS); }
-    else if (key === 13) {
-      event.preventDefault();
-      activate(SERVICES[index]);
-    } else if (key === 461 || key === 773) {
-      event.preventDefault();
-    }
+    if (key === 37) { event.preventDefault(); setFocus(selRow, selCol - 1); }
+    else if (key === 39) { event.preventDefault(); setFocus(selRow, selCol + 1); }
+    else if (key === 38) { event.preventDefault(); setFocus(selRow - 1, selCol); }
+    else if (key === 40) { event.preventDefault(); setFocus(selRow + 1, selCol); }
+    else if (key === 13) { event.preventDefault(); activate(navSvc[selRow][selCol]); }
+    else if (key === 461 || key === 773) { event.preventDefault(); }
   }, true);
 
-  document.addEventListener("keyup", function (event) {
-    if (!siteOpen) return;
-    event.preventDefault();
-    sendKey(false, event.keyCode);
-  }, true);
-
-  window.addEventListener("blur", function () {
-    // The iframe took focus; pull it back so Back stays catchable.
-    if (siteOpen) {
-      setTimeout(function () {
-        try { var s = document.getElementById("site"); if (s && s.contentWindow) s.contentWindow.focus(); } catch (e) {}
-      }, 0);
-    }
-  });
-
-  // Our in-app Spelunkr tells us when the user backed out of its home screen.
-  window.addEventListener("message", function (event) {
-    var d = event.data || {};
-    if (d && d.type === "spelunkr-exit") { hideSite(); }
-  });
-
-  document.addEventListener("visibilitychange", function () {
-    if (!document.hidden) {
-      leftOnPurpose = false;
-      return;
-    }
-    wake();
-  });
-  setInterval(function () {
-    if (document.hidden) wake();
-  }, 80);
+  document.addEventListener("visibilitychange", function () { if (!document.hidden) { leftOnPurpose = false; return; } wake(); });
+  setInterval(function () { if (document.hidden) wake(); }, 80);
 
   window.addEventListener("resize", fit);
   fit();
   tick();
   setInterval(tick, 15000);
-  paint();
+  setFocus(0, 0);
 })();
 </script>
 </body>

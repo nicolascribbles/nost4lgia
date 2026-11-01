@@ -9,11 +9,11 @@ ROOT = os.path.dirname(os.path.abspath(__file__))
 STAGE = os.path.join(ROOT, "tv-app")
 DIST = os.path.join(ROOT, "dist")
 APP_ID = "tv.livingroom.shell"
-VERSION = "2.2.0"
+VERSION = "2.5.0"
 
 APPINFO = """{
   "id": "tv.livingroom.shell",
-  "version": "2.2.0",
+  "version": "2.5.0",
   "vendor": "Living Room",
   "type": "web",
   "main": "index.html",
@@ -28,7 +28,7 @@ APPINFO = """{
 """
 
 CONTROL = """Package: tv.livingroom.shell
-Version: 2.2.0
+Version: 2.5.0
 Section: misc
 Priority: optional
 Architecture: all
@@ -105,16 +105,27 @@ def main():
     if os.path.isdir(logo_dst):
         shutil.rmtree(logo_dst)
     shutil.copytree(logo_src, logo_dst)
+    font_src = os.path.join(ROOT, "launcher", "fonts")
+    font_dst = os.path.join(STAGE, "fonts")
+    if os.path.isdir(font_dst):
+        shutil.rmtree(font_dst)
+    if os.path.isdir(font_src):
+        shutil.copytree(font_src, font_dst)
     with open(os.path.join(STAGE, "appinfo.json"), "w", encoding="utf-8", newline="\n") as handle:
         handle.write(APPINFO)
 
     prefix = "usr/palm/applications/%s/" % APP_ID
-    data_entries = [(prefix, b"", 0o755), (prefix + "logos/", b"", 0o755)]
+    data_entries = [(prefix, b"", 0o755), (prefix + "logos/", b"", 0o755), (prefix + "fonts/", b"", 0o755)]
     names = ["appinfo.json", "index.html", "spelunkr.html", "spelunkr-channels.js", "icon.png", "largeIcon.png"]
     logo_dir = os.path.join(STAGE, "logos")
     for filename in sorted(os.listdir(logo_dir)):
         if filename.endswith(".svg"):
             names.append("logos/" + filename)
+    font_dir = os.path.join(STAGE, "fonts")
+    if os.path.isdir(font_dir):
+        for filename in sorted(os.listdir(font_dir)):
+            if filename.endswith(".woff2"):
+                names.append("fonts/" + filename)
     for filename in names:
         path = os.path.join(STAGE, filename.replace("/", os.sep))
         with open(path, "rb") as handle:

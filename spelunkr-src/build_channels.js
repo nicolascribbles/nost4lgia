@@ -7,6 +7,46 @@ const BASE = "https://data.spelunkr.tv/";
 const OUT = "C:/Users/nicol/living-room/launcher/spelunkr-channels.js";
 const MAX_ITEMS = 80; // plenty for a continuously-playing channel; keeps size sane
 
+// Our own channel names (independent of Spelunkr's). Keyed by channel id.
+const RENAME = {
+  "saturday-morning": "CEREAL HOUR",
+  "primetime": "PRIME CUTS",
+  "syndicate": "RERUN ALLEY",
+  "late-nite-local": "PUBLIC ACCESS",
+  "happy-trees": "HAPPY ACCIDENTS",
+  "computer-chronicles": "BOOT DISK",
+  "open-mic": "LOCAL TALENT",
+  "library-card": "STORYTIME",
+  "nature-preserve": "WILDLANDS",
+  "unpaid-programming": "AS SEEN ON TV",
+  "radio-active-tv": "HEAVY ROTATION",
+  "latchkey-tv": "AFTER SCHOOL",
+  "kersplat": "SLIME TIME",
+  "final-frontier": "DEEP SPACE",
+  "rocket-punch": "MECHA ZONE",
+  "ovatv": "RENTAL VAULT",
+  "toonertia": "ACTION BLOCK",
+  "late-nite-swimclub": "DEEP END",
+  "warp-zone": "HIGH SCORE",
+  "homeroom": "GUIDANCE",
+  "mandatory-viewing": "ONBOARDING",
+  "fallout-shelter": "DUCK & COVER",
+  "dusty-trails": "HIGH NOON",
+  "gumshoe": "STAKEOUT",
+  "it-came-from": "CREATURE FEATURE",
+  "daily-dread": "NIGHTMARE FUEL",
+  "graveyard-shift": "MONSTER HOST",
+  "ray-gun": "ATOMIC AGE",
+  "signpost": "THE OTHER SIDE",
+  "rubber-hose": "INKWELL",
+  "meddling-kids": "SPOOKY KIDS",
+  "suplex": "MAT CLASSIC",
+  "vacation-slides": "HOME MOVIES",
+  "oops-all-bumps": "BUMPERS",
+  "test-pattern": "OFF AIR",
+  "waku-waku": "GAME SHOW JP"
+};
+
 (async () => {
   const lineup = await (await fetch(BASE + "lineup.json")).json();
   const channels = [];
@@ -42,7 +82,7 @@ const MAX_ITEMS = 80; // plenty for a continuously-playing channel; keeps size s
     channels.push({
       n: c.dial,
       id: c.id,
-      name: c.name,
+      name: RENAME[c.id] || c.name,
       emoji: c.emoji || "",
       color: c.color || "#8a8a8a",
       desc: c.description || "",
