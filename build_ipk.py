@@ -9,11 +9,11 @@ ROOT = os.path.dirname(os.path.abspath(__file__))
 STAGE = os.path.join(ROOT, "tv-app")
 DIST = os.path.join(ROOT, "dist")
 APP_ID = "tv.livingroom.shell"
-VERSION = "2.5.0"
+VERSION = "2.5.1"
 
 APPINFO = """{
   "id": "tv.livingroom.shell",
-  "version": "2.5.0",
+  "version": "2.5.1",
   "vendor": "Living Room",
   "type": "web",
   "main": "index.html",
@@ -28,7 +28,7 @@ APPINFO = """{
 """
 
 CONTROL = """Package: tv.livingroom.shell
-Version: 2.5.0
+Version: 2.5.1
 Section: misc
 Priority: optional
 Architecture: all

@@ -56,7 +56,8 @@
     border-radius: 50%; background: radial-gradient(circle, var(--glow) 0%, rgba(0,0,0,0) 65%); opacity: .3; transform: scale(.85);
     transition: opacity .15s ease, transform .2s ease; pointer-events: none; }
   .tile.focused .wash { opacity: .72; transform: scale(1.05); }
-  .tile .logo { position: absolute; left: 15%; right: 15%; top: 17%; bottom: 17%; z-index: 1; object-fit: contain; }
+  .tile .logo { position: absolute; left: 17%; right: 17%; top: 19%; bottom: 19%; z-index: 1;
+    background-size: contain; background-repeat: no-repeat; background-position: center; }
   .tile .logo.mono { filter: brightness(0) invert(1); }
   .tile.focused { background: #26262f; transform: scale(1.06); box-shadow: 0 0 0 3px #fff; z-index: 2; }
 
@@ -85,7 +86,7 @@
     { name: "Nost4lgia", url: "https://spelunkr.tv", web: true, keys: true, logo: "nost4lgia.svg", glow: "#ff6ec7" },
     { name: "Netflix", url: "https://www.netflix.com", appId: "netflix", logo: "netflix.svg", mono: true, glow: "#e50914" },
     { name: "Hulu", url: "https://www.hulu.com", appId: "hulu", logo: "hulu.svg", mono: true, glow: "#1ce783" },
-    { name: "Disney+", url: "https://www.disneyplus.com", appId: "com.disney.disneyplus-prod", logo: "disneyplus.svg", glow: "#113ccf" },
+    { name: "Disney+", url: "https://www.disneyplus.com", appId: "com.disney.disneyplus-prod", logo: "disneyplus.svg", mono: true, glow: "#2a6df4" },
     { name: "Paramount+", url: "https://www.paramountplus.com", appId: "com.cbs-all-access.webapp.prod", logo: "paramountplus.svg", mono: true, glow: "#0064ff" },
     { name: "Peacock", url: "https://www.peacocktv.com", appId: "com.peacock.tv", logo: "peacock.svg", glow: "#6e55dc" },
     { name: "YouTube", url: "https://www.youtube.com", appId: "youtube.leanback.v4", logo: "youtube.svg", mono: true, glow: "#ff4e45" },
@@ -177,7 +178,8 @@
     var t = document.createElement("div");
     t.className = "tile"; t.style.setProperty("--glow", service.glow);
     var wash = document.createElement("span"); wash.className = "wash"; t.appendChild(wash);
-    var logo = document.createElement("img"); logo.className = service.mono ? "logo mono" : "logo"; logo.alt = ""; logo.src = "logos/" + service.logo; t.appendChild(logo);
+    var logo = document.createElement("div"); logo.className = service.mono ? "logo mono" : "logo";
+    logo.style.backgroundImage = "url(logos/" + service.logo + ")"; t.appendChild(logo);
     return t;
   }
 
