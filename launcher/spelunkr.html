@@ -274,7 +274,7 @@
     gDesc.textContent = ch.desc || "";
   }
 
-  function moveChannel(d) { var n = selRow + d; if (n < 0) n = 0; if (n >= DATA.length) n = DATA.length - 1; selRow = n; highlightSel(); scrollToRow(); }
+  function moveChannel(d) { if (!DATA.length) return; selRow = (selRow + d + DATA.length) % DATA.length; highlightSel(); scrollToRow(); }
   function moveTime(dir) {
     var ch = DATA[selRow], prog = progAt(ch, selTime), floorNow = floorHalf(Date.now());
     var probe = dir > 0 ? prog.end + 1000 : prog.start - 1000;

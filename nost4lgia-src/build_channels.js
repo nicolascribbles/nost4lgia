@@ -42,16 +42,22 @@ const RENAME = {
   "meddling-kids": "SPOOKY KIDS",
   "suplex": "MAT CLASSIC",
   "vacation-slides": "HOME MOVIES",
-  "oops-all-bumps": "BUMPERS",
-  "test-pattern": "OFF AIR",
   "waku-waku": "GAME SHOW JP"
 };
+
+// Dev/test channels we don't ship (bumps-only, test pattern, ?debug-only).
+const SKIP = new Set(["oops-all-bumps", "test-pattern"]);
+
+// Dial numbers for real channels that have none upstream (otherwise the app
+// drops them into a 900+ fallback range).
+const DIAL = { "waku-waku": 700 };
 
 (async () => {
   const lineup = await (await fetch(BASE + "lineup.json")).json();
   const channels = [];
 
   for (const c of lineup.channels) {
+    if (SKIP.has(c.id)) { console.log("skip(dev)", c.id); continue; }
     const vers = c.versions && c.versions.length ? c.versions[c.versions.length - 1] : null;
     const manPath = vers && vers.manifest
       ? vers.manifest
@@ -80,7 +86,7 @@ const RENAME = {
     if (!items.length) { console.log("empty", c.id); continue; }
 
     channels.push({
-      n: c.dial,
+      n: (c.dial !== undefined && c.dial !== null) ? c.dial : DIAL[c.id],
       id: c.id,
       name: RENAME[c.id] || c.name,
       emoji: c.emoji || "",
