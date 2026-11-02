@@ -15,7 +15,7 @@ A native **LG webOS** app (id `tv.livingroom.shell`) containing two pages:
   pages themselves.
 
 Channel data is generated into `launcher/spelunkr-channels.js` (a
-`window.SPELUNKR_CHANNELS` global) by `spelunkr-src/build_channels.js`. It is
+`window.SPELUNKR_CHANNELS` global) by `nost4lgia-src/build_channels.js`. It is
 **not** committed — regenerate it with Node.
 
 ## The target is Chromium 68 (webOS 5) — this constrains everything
@@ -38,7 +38,7 @@ once (the guide preview is paused before tuning).
 ## Build / install / test
 
 ```bash
-node spelunkr-src/build_channels.js    # regenerate channel data
+node nost4lgia-src/build_channels.js    # regenerate channel data
 python build_ipk.py                     # -> dist/tv.livingroom.shell_<ver>_all.ipk
 ares-install --device tv dist/tv.livingroom.shell_<ver>_all.ipk
 ares-launch  --device tv tv.livingroom.shell

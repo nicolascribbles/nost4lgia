@@ -1,6 +1,6 @@
 // Build a local, self-contained channel database from Spelunkr's public data.
 // Fetched here (no CORS limits); the TV app then reads the local JSON and streams
-// the same archive.org videos directly. Run: node spelunkr-src/build_channels.js
+// the same archive.org videos directly. Run: node nost4lgia-src/build_channels.js
 const fs = require("fs");
 
 const BASE = "https://data.spelunkr.tv/";

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nost4lgia — cable TV, but weirder</title>
+<meta name="description" content="A retro TV guide that streams public-domain and archived shows as always-on channels. Browser demo of the Nost4lgia webOS TV app.">
+<style>
+  @font-face { font-family: "NostMono"; src: url("fonts/space-mono-400.woff2") format("woff2"); font-weight: 400; font-display: swap; }
+  @font-face { font-family: "NostMono"; src: url("fonts/space-mono-700.woff2") format("woff2"); font-weight: 700; font-display: swap; }
+  * { box-sizing: border-box; }
+  :root {
+    --magenta: #ff6ec7; --cyan: #4df5ff; --violet: #b36bff; --yellow: #fff07a; --ink: #f7ebff;
+  }
+  html, body { margin: 0; min-height: 100%; background: #160a33; color: var(--ink);
+    font-family: "NostMono", "Courier New", monospace; -webkit-font-smoothing: antialiased; }
+  body { background: linear-gradient(180deg, #3b1578 0%, #2a0f5c 45%, #160a33 100%); }
+  a { color: inherit; }
+  .wrap { max-width: 980px; margin: 0 auto; padding: 32px 20px 64px; }
+
+  /* Hero */
+  .hero { position: relative; border-radius: 22px; overflow: hidden; padding: 56px 40px 64px;
+    background: linear-gradient(115deg, #180a3a 0%, #5a1e9e 32%, #b2309e 62%, #ff6ec7 82%, #4df5ff 112%); }
+  .sun { position: absolute; right: 44px; top: 32px; width: 150px; height: 150px; border-radius: 50%; z-index: 0;
+    background:
+      repeating-linear-gradient(0deg, transparent 0px, transparent 12px, rgba(24,10,58,.85) 12px, rgba(24,10,58,.85) 17px),
+      radial-gradient(circle at 50% 42%, #fff07a 0%, #ff8a3d 38%, #ff2e97 70%, #b36bff 100%);
+    box-shadow: 0 0 60px rgba(255,110,199,.7); }
+  .grid { position: absolute; left: 0; right: 0; bottom: 0; height: 90px; z-index: 0; pointer-events: none; opacity: .55;
+    background-image:
+      repeating-linear-gradient(90deg, rgba(77,245,255,.55) 0px, rgba(77,245,255,.55) 2px, transparent 2px, transparent 54px),
+      linear-gradient(0deg, rgba(77,245,255,.5), transparent); }
+  .hero .inner { position: relative; z-index: 1; }
+  .logo { width: 104px; height: 104px; margin-bottom: 18px; filter: drop-shadow(0 6px 16px rgba(0,0,0,.45)); }
+  h1 { font-size: 58px; font-weight: 700; letter-spacing: 2px; margin: 0; line-height: 1;
+    text-shadow: 0 0 14px rgba(77,245,255,.9), 0 0 30px rgba(255,110,199,.7), 3px 3px 0 rgba(0,0,0,.3); }
+  h1 .d { color: var(--cyan); }
+  .tag { font-size: 22px; margin-top: 16px; color: #f6ecff; text-shadow: 0 2px 8px rgba(0,0,0,.4); }
+  .btns { margin-top: 30px; display: flex; flex-wrap: wrap; gap: 14px; }
+  .btn { display: inline-block; font-size: 19px; font-weight: 700; text-decoration: none; border-radius: 12px;
+    padding: 14px 28px; box-shadow: 0 6px 18px rgba(0,0,0,.35); }
+  .btn.primary { color: #15103a; background: linear-gradient(90deg, #fff07a, #4df5ff); }
+  .btn.ghost { color: #fff; background: rgba(13,4,34,.45); border: 2px solid rgba(255,255,255,.55); }
+
+  /* Body sections */
+  .sec { margin-top: 44px; }
+  .sec h2 { font-size: 24px; color: var(--cyan); margin: 0 0 14px; text-shadow: 1px 1px 0 var(--magenta); }
+  .sec p { font-size: 17px; line-height: 1.6; color: #e9ddff; margin: 0 0 14px; }
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin-top: 8px; }
+  .card { background: rgba(58,26,110,.5); border: 1px solid rgba(179,107,255,.4); border-radius: 14px; padding: 20px; }
+  .card h3 { margin: 0 0 8px; font-size: 18px; color: var(--yellow); }
+  .card p { font-size: 15px; margin: 0; color: #ddd0f5; line-height: 1.55; }
+  .keyshint { display: inline-block; margin-top: 6px; font-size: 14px; color: #c9a9ff;
+    border: 1px dashed rgba(201,169,255,.5); border-radius: 8px; padding: 8px 12px; }
+
+  footer { margin-top: 52px; padding-top: 22px; border-top: 1px solid rgba(179,107,255,.35);
+    font-size: 14px; color: #c9a9ff; line-height: 1.7; }
+  footer .by { color: var(--cyan); }
+  footer a { color: var(--yellow); }
+
+  @media (max-width: 560px) {
+    h1 { font-size: 40px; }
+    .sun { width: 96px; height: 96px; right: 20px; top: 20px; }
+    .hero { padding: 40px 24px 52px; }
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="hero">
+      <div class="sun"></div>
+      <div class="grid"></div>
+      <div class="inner">
+        <img class="logo" src="logos/nost4lgia.svg" alt="Nost4lgia">
+        <h1>NOST<span class="d">4</span>LGIA</h1>
+        <div class="tag">Cable TV, but weirder — a retro guide of always-on channels.</div>
+        <div class="btns">
+          <a class="btn primary" href="app.html">&#9654;&nbsp; Open the Guide</a>
+          <a class="btn ghost" href="install.html">&#128250;&nbsp; Put it on your TV</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="sec">
+      <h2>What is this?</h2>
+      <p>Nost4lgia is a channel-surfing TV guide built out of public-domain and
+         publicly-archived video. Every channel plays on a continuous schedule, like
+         real cable — flip to a channel and you join whatever is "on" right now, mid-show.
+         No account, no queue, no autoplay-next-episode. Just a dial and a guide.</p>
+      <div class="keyshint">&#9650;&#9660; change channel &nbsp;&middot;&nbsp; &#9664;&#9654; browse the guide / seek &nbsp;&middot;&nbsp; Enter watch &nbsp;&middot;&nbsp; 0&ndash;9 jump to a channel &nbsp;&middot;&nbsp; Esc back</div>
+    </div>
+
+    <div class="sec">
+      <h2>How it works</h2>
+      <div class="cards">
+        <div class="card"><h3>A real schedule</h3><p>Each channel loops its library on a fixed timeline anchored to the clock, so the grid shows what's on now and what's up next.</p></div>
+        <div class="card"><h3>Join live</h3><p>Tuning in seeks to the current moment of the show instead of restarting it — change the channel and you drop into the middle, just like TV.</p></div>
+        <div class="card"><h3>Set reminders</h3><p>Pick a show airing later and it'll ask if you want to switch over when it starts.</p></div>
+      </div>
+    </div>
+
+    <div class="sec">
+      <h2>Where the video comes from</h2>
+      <p>Streams come straight from the <a href="https://archive.org" target="_blank" rel="noopener">Internet Archive</a>.
+         This is a hobby project for personal, nostalgic viewing of archived and public-domain material.</p>
+    </div>
+
+    <footer>
+      <span class="by">Made by Nicola Riker Urdaneta.</span>
+      Inspired by <a href="https://spelunkr.tv" target="_blank" rel="noopener">Spelunkr</a> &mdash;
+      Nost4lgia is an independent, open-source take with its own channels, guide and TV-first interface.
+      Source: <a href="https://github.com/nicolascribbles/nost4lgia" target="_blank" rel="noopener">github.com/nicolascribbles/nost4lgia</a>.
+    </footer>
+  </div>
+</body>
+</html>

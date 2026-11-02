@@ -10,6 +10,10 @@ It ships inside a minimal home-screen launcher (**Home+ / "Living Room"**) so yo
 can jump straight into your apps and Nost4lgia without wading through the stock
 webOS home screen.
 
+**No TV? Try it in a browser.** The same guide runs on the web — a landing page,
+the full channel guide, and install instructions live in [`web/`](web/) and deploy
+to Vercel as a static site. See [Web version](#web-version) below.
+
 > Built for a 2020 LG UN7000 (webOS 5.x, Chromium 68) but should run on any
 > webOS TV that supports Developer Mode.
 
@@ -75,7 +79,7 @@ hackable, remote-first channel grid running natively on an old LG TV, this is th
 ## How it works
 
 1. **Channel data** is baked into a single JavaScript file at build time
-   (`launcher/spelunkr-channels.js`) by `spelunkr-src/build_channels.js`, which
+   (`launcher/spelunkr-channels.js`) by `nost4lgia-src/build_channels.js`, which
    reads Spelunkr's public lineup/manifests and records each program's Internet
    Archive id, file, title, year, and duration. (This file is **not** committed —
    you generate it; see Setup.)
@@ -114,7 +118,7 @@ ares-novacom --device tv --getkey
 
 ### 3. Build the channel data + package
 ```bash
-node spelunkr-src/build_channels.js     # writes launcher/spelunkr-channels.js
+node nost4lgia-src/build_channels.js     # writes launcher/spelunkr-channels.js
 python build_ipk.py                      # writes dist/tv.livingroom.shell_<ver>_all.ipk
 ```
 
@@ -134,6 +138,38 @@ shortcut — then that number jumps straight in with no stock-home flash.
 
 ---
 
+## Web version
+
+The TV guide also runs as a plain web page so anyone can try it without a webOS
+TV. The deployable site lives in `web/`:
+
+- `index.html` — vaporwave landing page
+- `app.html` — the full channel guide + player (a copy of the TV app; "Back"
+  returns to the landing page instead of the launcher)
+- `install.html` — the TV install instructions, as a page
+- shared `fonts/`, `logos/`, and the generated channel data
+
+`web/` is assembled from the TV app in `launcher/` so there's one source of truth:
+
+```bash
+node nost4lgia-src/build_channels.js   # writes launcher/spelunkr-channels.js
+python build_web.py                    # copies the app + assets into web/
+```
+
+(`index.html` and `install.html` are hand-authored and aren't overwritten by the
+build.) Preview locally with any static server, e.g. `cd web && python -m http.server`.
+
+### Deploy to Vercel
+
+The site is zero-config static (`web/vercel.json` enables clean URLs). Import the
+repo at [vercel.com/new](https://vercel.com/new), and in the project settings set
+**Root Directory** to `web` (Framework preset: *Other*, no build command). Every
+push to `main` then redeploys. Or from the CLI:
+
+```bash
+cd web && npx vercel --prod
+```
+
 ## Project layout
 
 ```
@@ -142,9 +178,15 @@ launcher/
   spelunkr.html         Nost4lgia — the TV guide + player
   logos/                channel + app icons (SVG)
   spelunkr-channels.js  generated channel data (not committed)
-spelunkr-src/
+web/                    deployable browser version (Vercel)
+  index.html            landing page
+  app.html              the guide (built from launcher/spelunkr.html)
+  install.html          TV install instructions
+  vercel.json           static-site config
+nost4lgia-src/
   build_channels.js     fetches Spelunkr's public data -> spelunkr-channels.js
 build_ipk.py            packages everything into a webOS .ipk
+build_web.py            assembles web/ from launcher/
 AGENTS.md               notes for AI coding agents
 ```
 

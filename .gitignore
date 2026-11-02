@@ -1,10 +1,13 @@
-# Generated channel data (regenerate with spelunkr-src/build_channels.js)
+# Generated channel data (regenerate with nost4lgia-src/build_channels.js)
 launcher/spelunkr-channels.js
 
 # Build output / staging
 dist/
 tv-app/
 *.ipk
+
+# Vercel CLI
+.vercel/
 
 # Node / Python
 node_modules/
@@ -33,12 +36,12 @@ remove_apps.py
 check_apps.py
 inventory.py
 inspect_spelunkr.py
-spelunkr-src/analyze.js
-spelunkr-src/validate.js
-spelunkr-src/probe.js
-spelunkr-src/probe2.js
-spelunkr-src/sample-manifest.json
-spelunkr-src/lineup.json
+nost4lgia-src/analyze.js
+nost4lgia-src/validate.js
+nost4lgia-src/probe.js
+nost4lgia-src/probe2.js
+nost4lgia-src/sample-manifest.json
+nost4lgia-src/lineup.json
 
 # Early scratch builds + staging leftovers (superseded by launcher/)
 home-launcher/

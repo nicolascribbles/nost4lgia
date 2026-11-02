@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Put Nost4lgia on your TV</title>
+<meta name="description" content="How to sideload the Nost4lgia channel guide onto an LG webOS TV using Developer Mode.">
+<style>
+  @font-face { font-family: "NostMono"; src: url("fonts/space-mono-400.woff2") format("woff2"); font-weight: 400; font-display: swap; }
+  @font-face { font-family: "NostMono"; src: url("fonts/space-mono-700.woff2") format("woff2"); font-weight: 700; font-display: swap; }
+  * { box-sizing: border-box; }
+  :root { --magenta: #ff6ec7; --cyan: #4df5ff; --violet: #b36bff; --yellow: #fff07a; --ink: #f7ebff; }
+  html, body { margin: 0; min-height: 100%; background: #160a33; color: var(--ink);
+    font-family: "NostMono", "Courier New", monospace; -webkit-font-smoothing: antialiased; }
+  body { background: linear-gradient(180deg, #3b1578 0%, #2a0f5c 45%, #160a33 100%); }
+  a { color: var(--yellow); }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 28px 20px 72px; }
+
+  .top { display: flex; align-items: center; gap: 14px; margin-bottom: 8px; }
+  .top img { width: 48px; height: 48px; }
+  .back { font-size: 15px; text-decoration: none; color: var(--cyan); }
+  h1 { font-size: 40px; font-weight: 700; letter-spacing: 1px; margin: 14px 0 6px;
+    text-shadow: 0 0 12px rgba(77,245,255,.7), 2px 2px 0 rgba(0,0,0,.3); }
+  h1 .d { color: var(--cyan); }
+  .lede { font-size: 18px; color: #e9ddff; line-height: 1.6; margin: 0 0 10px; }
+
+  .note { background: rgba(58,26,110,.5); border-left: 4px solid var(--magenta); border-radius: 0 10px 10px 0;
+    padding: 14px 18px; margin: 22px 0; font-size: 15px; color: #eadeff; line-height: 1.6; }
+  .note b { color: var(--yellow); }
+
+  .step { margin-top: 34px; }
+  .step h2 { font-size: 22px; color: var(--cyan); margin: 0 0 10px; }
+  .step h2 .num { display: inline-block; min-width: 30px; height: 30px; line-height: 30px; text-align: center;
+    border-radius: 8px; background: linear-gradient(90deg, var(--magenta), var(--cyan)); color: #15103a; font-weight: 700; margin-right: 10px; }
+  .step p, .step li { font-size: 16px; line-height: 1.6; color: #e9ddff; }
+  .step ol, .step ul { padding-left: 22px; }
+
+  pre { background: #0d0422; border: 1px solid rgba(179,107,255,.45); border-radius: 10px; color: #e9ddff;
+    padding: 14px 16px; overflow-x: auto; font-size: 14px; line-height: 1.55; }
+  code { font-family: "NostMono", "Courier New", monospace; color: var(--yellow); }
+  pre code { color: #e9ddff; }
+  .vars { font-size: 14px; color: #c9a9ff; }
+
+  footer { margin-top: 56px; padding-top: 22px; border-top: 1px solid rgba(179,107,255,.35);
+    font-size: 14px; color: #c9a9ff; line-height: 1.7; }
+  footer .by { color: var(--cyan); }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="top">
+      <img src="logos/nost4lgia.svg" alt="">
+      <a class="back" href="index.html">&larr; back to Nost4lgia</a>
+    </div>
+    <h1>Put NOST<span class="d">4</span>LGIA on your TV</h1>
+    <p class="lede">Nost4lgia runs as a native app on <b>LG webOS TVs</b> (built for a
+      2020 UN7000 on webOS 5, but it should work on any webOS TV with Developer Mode).
+      It sideloads as an <code>.ipk</code> &mdash; no SDK, no App Store.</p>
+
+    <div class="note">
+      <b>Just want to look around first?</b> You don't need a TV &mdash; the
+      <a href="app.html">browser guide</a> runs the same channels right here. This page
+      is for installing the full remote-driven app onto an LG TV.
+    </div>
+
+    <div class="step">
+      <h2><span class="num">1</span>Enable Developer Mode on the TV</h2>
+      <ol>
+        <li>Install the <b>Developer Mode</b> app from the LG Content Store (a free LG account is required).</li>
+        <li>Open it, sign in, and switch <b>Dev Mode Status</b> on &mdash; the TV reboots.</li>
+        <li>Turn on <b>Key Server</b>. Note the <b>IP address</b> and <b>passphrase</b> it shows.</li>
+      </ol>
+    </div>
+
+    <div class="step">
+      <h2><span class="num">2</span>Install the tooling on your computer</h2>
+      <p>You'll need <b>Node.js 18+</b>, <b>Python 3</b> with Pillow (<code>pip install pillow</code>),
+         and LG's CLI:</p>
+      <pre><code>npm install -g @webosose/ares-cli</code></pre>
+      <p>Register your TV (use the IP from step 1; enter the passphrase when prompted):</p>
+      <pre><code>ares-setup-device --add tv --info "host=&lt;TV_IP&gt; port=9922 username=prisoner"
+ares-novacom --device tv --getkey</code></pre>
+      <p class="vars">Replace <code>&lt;TV_IP&gt;</code> with your TV's address, e.g. <code>192.168.0.208</code>.</p>
+    </div>
+
+    <div class="step">
+      <h2><span class="num">3</span>Get the code and build it</h2>
+      <pre><code>git clone https://github.com/nicolascribbles/nost4lgia.git
+cd nost4lgia
+
+node nost4lgia-src/build_channels.js   # writes launcher/spelunkr-channels.js
+python build_ipk.py                    # writes dist/tv.livingroom.shell_&lt;ver&gt;_all.ipk</code></pre>
+      <p>The first command fetches the channel lineup and bakes it into a local data file;
+         the second packages the app into an installable <code>.ipk</code>.</p>
+    </div>
+
+    <div class="step">
+      <h2><span class="num">4</span>Install and launch</h2>
+      <pre><code>ares-install --device tv dist/tv.livingroom.shell_2.5.1_all.ipk
+ares-launch  --device tv tv.livingroom.shell</code></pre>
+      <p>Nost4lgia opens on the TV. Drive it with the remote: <b>&#9650;&#9660;</b> change
+         channel, <b>&#9664;&#9654;</b> browse the guide, <b>OK</b> to watch, <b>0&ndash;9</b>
+         to tune by number, <b>Back</b> to step out.</p>
+    </div>
+
+    <div class="step">
+      <h2><span class="num">5</span>One-button access (optional)</h2>
+      <p>webOS won't let an app take over the physical Home button, but you can
+         <b>long-press a number key (1&ndash;9)</b> on the LG remote and assign the
+         Living Room app as a shortcut &mdash; then that number jumps straight in.</p>
+      <div class="note"><b>Heads up:</b> dev-mode apps stay installed only while Developer
+        Mode is active. LG requires periodic renewal from inside the Dev Mode app.</div>
+    </div>
+
+    <footer>
+      <span class="by">Made by Nicola Riker Urdaneta.</span>
+      Full docs and source:
+      <a href="https://github.com/nicolascribbles/nost4lgia" target="_blank" rel="noopener">github.com/nicolascribbles/nost4lgia</a>.
+      Inspired by <a href="https://spelunkr.tv" target="_blank" rel="noopener">Spelunkr</a>; not affiliated with LG.
+    </footer>
+  </div>
+</body>
+</html>
