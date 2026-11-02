@@ -140,7 +140,10 @@
 (function () {
   "use strict";
 
-  var DATA = (window.SPELUNKR_CHANNELS && window.SPELUNKR_CHANNELS.channels) ? window.SPELUNKR_CHANNELS.channels : [];
+  var ALL = (window.SPELUNKR_CHANNELS && window.SPELUNKR_CHANNELS.channels) ? window.SPELUNKR_CHANNELS.channels : [];
+  // Dev/test channels are kept in the data but hidden from the guide; ?debug shows them.
+  var showHidden = /[?&]debug(\b|=)/.test(location.search);
+  var DATA = showHidden ? ALL.slice() : ALL.filter(function (c) { return !c.hidden; });
   var fb = 900;
   for (var i = 0; i < DATA.length; i++) { if (DATA[i].n === undefined || DATA[i].n === null) DATA[i].n = fb++; }
   DATA.sort(function (a, b) { return a.n - b.n; });

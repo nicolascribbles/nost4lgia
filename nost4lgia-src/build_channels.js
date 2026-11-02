@@ -45,8 +45,9 @@ const RENAME = {
   "waku-waku": "GAME SHOW JP"
 };
 
-// Dev/test channels we don't ship (bumps-only, test pattern, ?debug-only).
-const SKIP = new Set(["oops-all-bumps", "test-pattern"]);
+// Dev/test channels kept in the data but hidden from the guide (the app only
+// shows them with ?debug). Bumps-only + test pattern.
+const HIDDEN = new Set(["oops-all-bumps", "test-pattern"]);
 
 // Dial numbers for real channels that have none upstream (otherwise the app
 // drops them into a 900+ fallback range).
@@ -57,7 +58,6 @@ const DIAL = { "waku-waku": 700 };
   const channels = [];
 
   for (const c of lineup.channels) {
-    if (SKIP.has(c.id)) { console.log("skip(dev)", c.id); continue; }
     const vers = c.versions && c.versions.length ? c.versions[c.versions.length - 1] : null;
     const manPath = vers && vers.manifest
       ? vers.manifest
@@ -93,6 +93,7 @@ const DIAL = { "waku-waku": 700 };
       color: c.color || "#8a8a8a",
       desc: c.description || "",
       start: (vers && vers.startIndex) || 0,
+      hidden: HIDDEN.has(c.id) || undefined, // kept in data, dropped from the guide
       items: items,
     });
     console.log("ch", String(c.dial).padStart(3), c.name, "-", items.length, "items");
