@@ -152,8 +152,14 @@
   var MIN = 60000, SLOT_MS = 30 * MIN, WINDOW_MS = 120 * MIN; // 2-hour window, 30-min grid
   var DEFAULT_DUR = 30 * MIN;
 
-  // Schedule anchor: aligned to the half hour, so program blocks line up with the grid.
-  var ANCHOR = (function () { var d = new Date(); d.setSeconds(0, 0); d.setMinutes(d.getMinutes() - (d.getMinutes() % 30)); return d.getTime(); })();
+  // Fixed broadcast epoch (a real half-hour boundary: 2020-01-01T00:00:00Z). The
+  // schedule is a pure function of absolute time since this instant, so each channel
+  // plays as a continuous broadcast that marches forward day to day instead of
+  // restarting from the top every time the page loads. When a channel reaches its
+  // newest program it wraps back to the oldest (see wrap()). It's a constant so all
+  // viewers are tuned to the same broadcast, and it's :00/:30-aligned so guide
+  // time-slots still land on the clock.
+  var ANCHOR = 1577836800000;
 
   var el = function (id) { return document.getElementById(id); };
   var guideEl = el("guide"), playerEl = el("player"), bodyEl = el("gBody"), rowsWrap = el("gRows");
